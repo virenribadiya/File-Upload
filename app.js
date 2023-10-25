@@ -1,5 +1,6 @@
 // importing requirements
 import { rateLimit } from 'express-rate-limit';
+// var RateLimit = require('express-rate-limit');
 const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
