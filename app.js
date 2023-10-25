@@ -1,9 +1,11 @@
 // importing requirements
+import { rateLimit } from 'express-rate-limit';
 const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
 const multer = require('multer');
 const csvtojson = require('csvtojson');
+const path = require('node:path');
 
 // using requirements
 const app = express();
@@ -11,6 +13,14 @@ app.use(express.urlencoded({extended:true}));
 app.use(cors());
 app.use(express.json());
 app.use(express.static('excelUploads')); 
+
+var limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+
+// apply rate limiter to all requests
+app.use(limiter);
 
 // mongodb connection
 mongoose.set('strictQuery', true);
@@ -48,6 +58,8 @@ var excelUploads = multer({storage:excelStorage});
 //=========================REST API=======================================
 
 app.get("/",function(request,response){
+    const schemaLocation = path.resolve('__dirname', 'schema.graphql');
+    const subgraph = readFileSync(schemaLocation).toString();
     response.sendFile(__dirname+"/index.html");
 });
 
